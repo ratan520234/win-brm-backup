@@ -10,9 +10,6 @@
         name: Windows-Server-Backup
         state: present
       register: win_feature
-    - name: Reboot if installing Web-Server feature requires it
-      win_reboot:
-      when: win_feature.reboot_required
     - name: taking BMR backup
       ansible.windows.win_command:  wbadmin start backup -backupTarget:"{{ backup_target }}" -allCritical -quiet
       register: pwsh_output
