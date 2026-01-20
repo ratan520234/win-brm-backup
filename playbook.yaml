@@ -14,7 +14,7 @@
       win_reboot:
       when: win_feature.reboot_required
     - name: taking BMR backup
-      ansible.windows.win_powershell:
+      win_powershell:
         script: |
           wbadmin start backup -backupTarget: "{{ backup_target }}" -allCritical -quiet
       register: pwsh_output
