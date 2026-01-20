@@ -11,7 +11,7 @@
         state: present
       register: win_feature
     - name: taking BMR backup
-      ansible.windows.win_command:  wbadmin start backup -backupTarget:"{{ backup_target }}" -allCritical -quiet
+      win_command:  wbadmin start backup -backupTarget:"{{ backup_target }}" -allCritical -quiet
       register: pwsh_output
       when: win_feature.changed
       
