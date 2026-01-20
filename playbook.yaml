@@ -18,5 +18,5 @@
         script: |
           wbadmin start backup -backupTarget:"{{ backup_target }}" -allCritical -quiet
       register: pwsh_output
-      when: win_feature is succeeded
+      when: win_feature.changed
       
