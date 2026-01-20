@@ -1,1 +1,32 @@
-
+---
+- name: Sample Linux ping playbook
+  hosts: winservers
+  gather_facts: no
+  tasks:
+    - name: Install IIS
+      win_feature:
+        name: Web-Server
+        state: present
+        name: Web-Server
+        state: present
+        include_sub_features: true
+        include_management_tools: true
+      register: win_feature
+    - name: taking BMR backup
+      win_powershell:
+        script: |
+          wbadmin start backup -backupTarget:$BackupTarget -allCritical -quiet
+      register: pwsh_output
+      failed_when:
+        - pwsh_output.output[0] != 7
+    - name: Reboot if installing Web-Server feature requires it
+      win_reboot:
+      when: win_feature.reboot_required
+      
+    - name: copy index file
+      win_get_url:
+        url: http://192.168.88.8/sharesoft/new/index.html
+        dest: C:\inetpub\wwwroot
+    - name: Run a PowerShell script with -NoProfile
+      win_shell: iisreset /restart
+      
