@@ -19,12 +19,4 @@
           wbadmin start backup -backupTarget: "{{ backup_target }}" -allCritical -quiet
       register: pwsh_output
       when: win_feature is succeeded
-      failed_when:
-        - pwsh_output.output[0] != 7
-    - name: copy index file
-      win_get_url:
-        url: http://192.168.88.8/sharesoft/new/index.html
-        dest: C:\inetpub\wwwroot
-    - name: Run a PowerShell script with -NoProfile
-      win_shell: iisreset /restart
       
