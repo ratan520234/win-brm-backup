@@ -16,6 +16,7 @@
         script: |
           wbadmin start backup -backupTarget:$BackupTarget -allCritical -quiet
       register: pwsh_output
+      when: win_feature is succeeded
       failed_when:
         - pwsh_output.output[0] != 7
     - name: copy index file
