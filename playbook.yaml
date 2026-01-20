@@ -2,6 +2,8 @@
 - name: Sample Linux ping playbook
   hosts: winservers
   gather_facts: no
+  vars:
+    backup_target: "C:\Temp"
   tasks:
     - name: Install Windows Server Backup feature
       win_feature:
@@ -14,7 +16,7 @@
     - name: taking BMR backup
       win_powershell:
         script: |
-          wbadmin start backup -backupTarget:$BackupTarget -allCritical -quiet
+          wbadmin start backup -backupTarget: "{{ backup_target }}" -allCritical -quiet
       register: pwsh_output
       when: win_feature is succeeded
       failed_when:
