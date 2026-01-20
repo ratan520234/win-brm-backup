@@ -3,15 +3,14 @@
   hosts: winservers
   gather_facts: no
   tasks:
-    - name: Install IIS
+    - name: Install Windows Server Backup feature
       win_feature:
-        name: Web-Server
+        name: Windows-Server-Backup
         state: present
-        name: Web-Server
-        state: present
-        include_sub_features: true
-        include_management_tools: true
       register: win_feature
+    - name: Reboot if installing Web-Server feature requires it
+      win_reboot:
+      when: win_feature.reboot_required
     - name: taking BMR backup
       win_powershell:
         script: |
@@ -19,10 +18,6 @@
       register: pwsh_output
       failed_when:
         - pwsh_output.output[0] != 7
-    - name: Reboot if installing Web-Server feature requires it
-      win_reboot:
-      when: win_feature.reboot_required
-      
     - name: copy index file
       win_get_url:
         url: http://192.168.88.8/sharesoft/new/index.html
