@@ -13,5 +13,4 @@
     - name: taking BMR backup
       win_command:  wbadmin start backup -backupTarget:"{{ backup_target }}" -allCritical -quiet
       register: pwsh_output
-      when: win_feature.changed
       
