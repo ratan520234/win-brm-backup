@@ -3,7 +3,7 @@
   hosts: winservers
   gather_facts: no
   vars:
-    backup_target: "C:\\temp"
+    backup_target: "C:\\temp\\new"
   tasks:
     - name: Install Windows Server Backup feature
       win_feature:
