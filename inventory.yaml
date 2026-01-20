@@ -1,1 +1,6 @@
-
+all:
+  children:
+    winservers:
+      hosts:
+        WIN-194FK0KN6C4:
+          ansible_host: 192.168.161.141
