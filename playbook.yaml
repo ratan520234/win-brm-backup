@@ -13,7 +13,7 @@
       register: win_feature
     
     - name: Find any available drive with enough free space
-      ansible.windows.win_powershell:
+      win_powershell:
         script: |
           $minFreeGB = 50
           Get-CimInstance Win32_LogicalDisk |
