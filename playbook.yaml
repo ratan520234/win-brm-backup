@@ -4,13 +4,45 @@
   gather_facts: no
   vars:
     backup_target: "C:\\temp\\new"
+    nas_path: "\\test\nas"
   tasks:
     - name: Install Windows Server Backup feature
       win_feature:
         name: Windows-Server-Backup
         state: present
       register: win_feature
+    
+    - name: Find any available drive with enough free space
+      ansible.windows.win_powershell:
+        script: |
+          $minFreeGB = 50
+          Get-CimInstance Win32_LogicalDisk |
+            Where-Object {
+              $_.DriveType -eq 3 -and
+              $_.DeviceID -ne 'C:' -and
+              ($_.FreeSpace / 1GB) -ge $minFreeGB
+            } |
+            Sort-Object DeviceID |
+            Select-Object -First 1 DeviceID |
+            ConvertTo-Json
+      register: drive_raw
+    - name: Register backup drive
+      set_fact:
+        backup_drive: "{{ drive_raw.output[0] | from_json | dict2items | selectattr('key','eq','DeviceID') | map(attribute='value') | first }}"
     - name: taking BMR backup
-      win_command:  wbadmin start backup -backupTarget:"{{ backup_target }}" -allCritical -quiet
+      win_command:  wbadmin start backup -backupTarget:"{{ backup_drive }}" -allCritical -quiet
       register: pwsh_output
+    - name: Extract the backup path
+      set_fact:
+        backup_path: "{{ backup_info.stdout_lines | select('search', 'Backup target') | map('regex_replace', 'Backup target:\\s+', '') | first }}"
+
+    - name: Show backup path
+      debug:
+        msg: "Backup is located at {{ backup_path }}"
+
+    - name: Copy backup to another location
+      win_copy:
+        src: "{{ backup_path }}\\"
+        dest: "D:\\BackupCopy\\"
+        recurse: yes
       
